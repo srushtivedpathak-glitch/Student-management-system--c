@@ -1,0 +1,251 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// ============================================
+// ENUMS
+// ============================================
+enum Goal { LOSE, GAIN, MAINTAIN };
+
+// ============================================
+// USER STRUCTURE
+// ============================================
+struct User {
+    char name[50];
+    int age;
+    float weight;
+    float height;
+    enum Goal goal;
+};
+
+struct User currentUser;
+
+// Progress storage (array instead of file)
+char progress[100][200];
+int progressCount = 0;
+
+// ============================================
+// FUNCTION DECLARATIONS
+// ============================================
+void registerUser();
+void mainMenu();
+void bmiCalculator();
+void calorieTracker();
+void exerciseLogger();
+void dietSuggester();
+void sleepTracker();
+void waterTracker();
+void viewProgress();
+void dailyHealthTip();
+
+// ============================================
+// REGISTER USER
+// ============================================
+void registerUser() {
+    printf("\n===== REGISTER =====\n");
+
+    printf("Enter your name: ");
+    scanf(" %[^\n]", currentUser.name);
+
+    printf("Enter your age: ");
+    scanf("%d", &currentUser.age);
+
+    printf("Enter your weight (kg): ");
+    scanf("%f", &currentUser.weight);
+
+    printf("Enter your height (cm): ");
+    scanf("%f", &currentUser.height);
+
+    int g;
+    printf("Select Goal:\n1. Lose\n2. Gain\n3. Maintain\nChoice: ");
+    scanf("%d", &g);
+
+    if (g == 1) currentUser.goal = LOSE;
+    else if (g == 2) currentUser.goal = GAIN;
+    else currentUser.goal = MAINTAIN;
+
+    printf("\n✅ Welcome, %s!\n", currentUser.name);
+}
+
+// ============================================
+// BMI CALCULATOR
+// ============================================
+void bmiCalculator() {
+    float h = currentUser.height / 100;
+    float bmi = currentUser.weight / (h * h);
+
+    printf("\nBMI = %.2f\n", bmi);
+
+    if (bmi < 18.5)
+        printf("UNDERWEIGHT\n");
+    else if (bmi < 25)
+        printf("NORMAL\n");
+    else if (bmi < 30)
+        printf("OVERWEIGHT\n");
+    else
+        printf("OBESE\n");
+
+    sprintf(progress[progressCount++], "BMI: %.2f", bmi);
+}
+
+// ============================================
+// CALORIE TRACKER
+// ============================================
+void calorieTracker() {
+    int choice;
+    float duration, met, calories;
+
+    printf("\n1.Walking 2.Running 3.Cycling 4.Swimming 5.Gym\nChoice: ");
+    scanf("%d", &choice);
+
+    printf("Duration (minutes): ");
+    scanf("%f", &duration);
+
+    switch(choice) {
+        case 1: met = 3.5; break;
+        case 2: met = 8.0; break;
+        case 3: met = 6.0; break;
+        case 4: met = 7.0; break;
+        case 5: met = 5.0; break;
+        default: met = 4.0;
+    }
+
+    calories = met * currentUser.weight * (duration / 60);
+    printf("Calories burned: %.2f\n", calories);
+
+    sprintf(progress[progressCount++], "Calories: %.2f", calories);
+}
+
+// ============================================
+// EXERCISE LOGGER
+// ============================================
+void exerciseLogger() {
+    char ex[50];
+    int sets, reps;
+
+    printf("Exercise: ");
+    scanf(" %[^\n]", ex);
+
+    printf("Sets: ");
+    scanf("%d", &sets);
+
+    printf("Reps: ");
+    scanf("%d", &reps);
+
+    int total = sets * reps;
+
+    printf("Total reps: %d\n", total);
+
+    sprintf(progress[progressCount++], "%s: %d reps", ex, total);
+}
+
+// ============================================
+// DIET SUGGESTER
+// ============================================
+void dietSuggester() {
+    printf("\n===== DIET =====\n");
+
+    if (currentUser.goal == LOSE) {
+        printf("Eat oats, salad, soup\n");
+    } else if (currentUser.goal == GAIN) {
+        printf("Eat banana shake, rice, paneer\n");
+    } else {
+        printf("Balanced diet: roti, sabzi, dal\n");
+    }
+}
+
+// ============================================
+// SLEEP TRACKER
+// ============================================
+void sleepTracker() {
+    float hours;
+
+    printf("Hours slept: ");
+    scanf("%f", &hours);
+
+    if (hours < 6)
+        printf("Less sleep\n");
+    else if (hours <= 8)
+        printf("Good sleep\n");
+    else
+        printf("Too much sleep\n");
+
+    sprintf(progress[progressCount++], "Sleep: %.1f hrs", hours);
+}
+
+// ============================================
+// WATER TRACKER
+// ============================================
+void waterTracker() {
+    int g;
+
+    printf("Glasses of water: ");
+    scanf("%d", &g);
+
+    if (g < 8)
+        printf("Drink more water\n");
+    else
+        printf("Good hydration\n");
+
+    sprintf(progress[progressCount++], "Water: %d glasses", g);
+}
+
+// ============================================
+// VIEW PROGRESS
+// ============================================
+void viewProgress() {
+    printf("\n===== PROGRESS =====\n");
+
+    for (int i = 0; i < progressCount; i++) {
+        printf("%s\n", progress[i]);
+    }
+}
+
+// ============================================
+// DAILY TIP
+// ============================================
+void dailyHealthTip() {
+    char *tips[] = {
+        "Drink water",
+        "Exercise daily",
+        "Sleep well",
+        "Eat fruits",
+        "Avoid junk food"
+    };
+
+    int index = rand() % 5;
+    printf("Tip: %s\n", tips[index]);
+}
+
+// ============================================
+// MAIN MENU
+// ============================================
+void mainMenu() {
+    int ch;
+
+    do {
+        printf("\n1.BMI 2.Calories 3.Exercise 4.Diet 5.Sleep 6.Water 7.Progress 8.Tip 0.Exit\n");
+        scanf("%d", &ch);
+
+        switch(ch) {
+            case 1: bmiCalculator(); break;
+            case 2: calorieTracker(); break;
+            case 3: exerciseLogger(); break;
+            case 4: dietSuggester(); break;
+            case 5: sleepTracker(); break;
+            case 6: waterTracker(); break;
+            case 7: viewProgress(); break;
+            case 8: dailyHealthTip(); break;
+        }
+
+    } while(ch != 0);
+}
+
+// ============================================
+// MAIN
+// ============================================
+int main() {
+    registerUser();
+    mainMenu();
+    return 0;
+}
